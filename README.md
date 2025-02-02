@@ -58,5 +58,4 @@ A real-time Task Collaboration Platform that allows teams to create, assign, and
 
 - [Node.js](https://nodejs.org/) (v14 or later)
 - [MongoDB](https://www.mongodb.com/) (running instance or MongoDB Atlas)
-- [npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/)
-
+- [npm](https://www.npmjs.com/) 
