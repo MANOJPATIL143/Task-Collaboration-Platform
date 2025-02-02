@@ -14,7 +14,6 @@ A real-time Task Collaboration Platform that allows teams to create, assign, and
 - [API Endpoints](#api-endpoints)
 - [Real-Time Collaboration](#real-time-collaboration)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 
