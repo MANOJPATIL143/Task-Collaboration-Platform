@@ -9,11 +9,7 @@ A real-time Task Collaboration Platform that allows teams to create, assign, and
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-- [API Endpoints](#api-endpoints)
-- [Real-Time Collaboration](#real-time-collaboration)
-- [Contributing](#contributing)
+
 
 ## Features
 
