@@ -13,32 +13,31 @@ import {
   Switch,
   Upload,
   message,
+  Modal,
 } from "antd";
 
 import {
   FacebookOutlined,
   TwitterOutlined,
   InstagramOutlined,
-  VerticalAlignTopOutlined,
 } from "@ant-design/icons";
 import useAxios from "../../hooks/useAxios";
 import BgProfile from "../../assets/images/bg-profile.jpg";
-import profilavatar from "../../assets/images/face-1.jpg";
 import convesionImg from "../../assets/images/face-3.jpg";
 import convesionImg2 from "../../assets/images/face-4.jpg";
 import convesionImg3 from "../../assets/images/face-5.jpeg";
 import convesionImg4 from "../../assets/images/face-6.jpeg";
 import convesionImg5 from "../../assets/images/face-2.jpg";
-import project1 from "../../assets/images/home-decor-1.jpeg";
-import project2 from "../../assets/images/home-decor-2.jpeg";
-import project3 from "../../assets/images/home-decor-3.jpeg";
+import UpdateUserModal from "../model/UpdateUserModal";
 
 function Profile() {
   const profile = useAxios();
   const [imageURL, setImageURL] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [info, setInfo] = useState([]);
-  console.log(info);
+  // console.log(info);
 
   const TasskLists = async () => {
     setLoading(true);
@@ -116,6 +115,11 @@ function Profile() {
     },
   ];
 
+  const onClose = () => {
+    setIsModalVisible(false);
+    TasskLists();
+  };
+
   return (
     <>
       <div
@@ -123,17 +127,38 @@ function Profile() {
         style={{ backgroundImage: "url(" + BgProfile + ")" }}
       ></div>
       <Card
-
+        loading={loading}
         className="card-profile-head"
       >
         <Row justify="space-between" align="middle" gutter={[24, 0]}>
           <Col span={24} md={12} className="col-info">
             <Avatar.Group>
-              <Avatar size={74} shape="square" src={profilavatar} />
+              <Avatar
+                size={74}
+                shape="square"
+                src={info?.profileImage}
+                onClick={() => setVisible(true)}
+                style={{ cursor: "pointer" }}
+              />
               <div className="avatar-info">
                 <h4 className="font-semibold m-0">{info?.name}</h4>
               </div>
             </Avatar.Group>
+
+            {/* Modal for Showing Profile Image */}
+            <Modal
+              open={visible}
+              footer={null}
+              onCancel={() => setVisible(false)}
+              centered
+
+            >
+              <img
+                src={info?.profileImage}
+                alt="Profile"
+                style={{ width: "100%", borderRadius: "8px" }}
+              />
+            </Modal>
           </Col>
           <Col
             span={24}
@@ -154,42 +179,49 @@ function Profile() {
       </Card>
 
       <Row gutter={[24, 0]}>
-      
-          <Card
-            bordered={false}
-            title={<h6 className="font-semibold m-0">Profile Information</h6>}
-            className="header-solid h-full card-profile-information"
-            extra={<Button type="link">{pencil}</Button>}
-            bodyStyle={{ paddingTop: 0, paddingBottom: 16 }}
-          >
-            <hr className="my-25" />
-            <Descriptions title="">
-              <Descriptions.Item label="Full Name" span={3}>
+
+        <Card
+          // loading={loading}
+          bordered={false}
+          title={<h6 className="font-semibold m-0">Profile Information</h6>}
+          className="header-solid h-full card-profile-information"
+          extra={<Button onClick={() => setIsModalVisible(true)} type="link">{pencil}</Button>}
+          bodyStyle={{ paddingTop: 0, paddingBottom: 16 }}
+        >
+          <hr className="my-25" />
+          <Descriptions title="">
+            <Descriptions.Item label="Full Name" span={3}>
               {info?.name}
-              </Descriptions.Item>
-              <Descriptions.Item label="Mobile" span={3}>
-                NA
-              </Descriptions.Item>
-              <Descriptions.Item label="Email" span={3}>
+            </Descriptions.Item>
+            <Descriptions.Item label="Mobile" span={3}>
+              {info?.mobileno}
+            </Descriptions.Item>
+            <Descriptions.Item label="Email" span={3}>
               {info?.email}
-              </Descriptions.Item>
-              {/* <Descriptions.Item label="Location" span={3}>
+            </Descriptions.Item>
+            {/* <Descriptions.Item label="Location" span={3}>
                 USA
               </Descriptions.Item> */}
-              <Descriptions.Item label="Social" span={3}>
-                <a href="#pablo" className="mx-5 px-5">
-                  {<TwitterOutlined />}
-                </a>
-                <a href="#pablo" className="mx-5 px-5">
-                  {<FacebookOutlined style={{ color: "#344e86" }} />}
-                </a>
-                <a href="#pablo" className="mx-5 px-5">
-                  {<InstagramOutlined style={{ color: "#e1306c" }} />}
-                </a>
-              </Descriptions.Item>
-            </Descriptions>
-          </Card>
-      
+            <Descriptions.Item label="Social" span={3}>
+              <a href="#pablo" className="mx-5 px-5">
+                {<TwitterOutlined />}
+              </a>
+              <a href="#pablo" className="mx-5 px-5">
+                {<FacebookOutlined style={{ color: "#344e86" }} />}
+              </a>
+              <a href="#pablo" className="mx-5 px-5">
+                {<InstagramOutlined style={{ color: "#e1306c" }} />}
+              </a>
+            </Descriptions.Item>
+          </Descriptions>
+
+          <UpdateUserModal
+            visible={isModalVisible}
+            onClose={onClose}
+            data={info}
+          />
+        </Card>
+
       </Row>
     </>
   );

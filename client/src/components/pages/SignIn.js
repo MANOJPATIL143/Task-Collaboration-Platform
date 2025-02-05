@@ -49,8 +49,7 @@ const SignIn = () => {
   };
 
   if (redirectToHome) {
-    console.log(redirectToHome);
-    
+    // console.log(redirectToHome);
     return <Redirect to="/tasks" />;  
   }
 

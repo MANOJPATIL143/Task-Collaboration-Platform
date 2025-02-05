@@ -264,6 +264,7 @@ console.log(selectedMembers);
         open={isModalVisible}
         onOk={handleAddTeam}
         onCancel={() => setIsModalVisible(false)}
+        maskClosable={false} 
       >
         <Input
           placeholder="Enter Team Name"
@@ -293,6 +294,7 @@ console.log(selectedMembers);
         open={isTaskModalVisible}
         onOk={handleAssignTask}
         onCancel={() => setIsTaskModalVisible(false)}
+        maskClosable={false} 
       >
         <Select
           placeholder="Select Team"
@@ -331,6 +333,7 @@ console.log(selectedMembers);
         open={isInviteModalVisible}
         onOk={handleInviteUser}
         onCancel={() => setIsInviteModalVisible(false)}
+        maskClosable={false} 
       >
         <Col>
           <Select

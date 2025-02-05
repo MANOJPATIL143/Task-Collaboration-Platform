@@ -22,20 +22,19 @@ import TaskForm from "../forms/TaskListForm";
 import TaskForm1 from "../forms/TaskForm1";
 import usePostApi from "../../hooks/usePostApi";
 import useAxios from "../../hooks/useAxios";
-import io from 'socket.io-client';
+import io from "socket.io-client";
 
 const { Option } = Select;
 const { Title } = Typography;
 const { TabPane } = Tabs;
-const socket = io('http://localhost:5000');
+const socket = io("http://localhost:5000");
 
 const TaskList = () => {
   const { data, error, postData } = usePostApi("tasks/deleteTask");
   const TaskLists = useAxios();
   const userRequest = useAxios();
 
-  const [tasks, setTasks] = useState([
-  ]);
+  const [tasks, setTasks] = useState([]);
 
   const [filterStatus, setFilterStatus] = useState("All");
   const [filterPriority, setFilterPriority] = useState("All");
@@ -55,9 +54,11 @@ const TaskList = () => {
         url: "tasks/getTasks",
         method: "GET",
       });
-      // console.log('Users:', users);
-      setTasks(res);
-      setLoading(false);
+      if (res) {
+        setAction("entry");
+        setTasks(res);
+        setLoading(false);
+      }
     } catch (err) {
       console.error("Error fetching users:", err);
     }
@@ -86,7 +87,7 @@ const TaskList = () => {
       setTimeout(() => {
         TasskLists();
       }, 500);
-      socket.on('taskDeleted', (taskId) => {
+      socket.on("taskDeleted", (taskId) => {
         setTasks((prevTasks) =>
           prevTasks.filter((task) => task._id !== taskId)
         );
@@ -103,14 +104,25 @@ const TaskList = () => {
       cancelText: "No",
       onOk: async () => {
         await DeleteTask(taskId);
-        
       },
     });
   };
 
   useEffect(() => {
     TasskLists();
-  }, []);
+  }, [data]);
+
+  useEffect(() => {
+    socket.on("taskDeleted", (deletedTaskId) => {
+      console.log("Task deleted:", deletedTaskId);
+      setTasks((prevTasks) =>
+        prevTasks.filter((task) => task.id !== deletedTaskId)
+      );
+    });
+    return () => {
+      socket.off("taskDeleted");
+    };
+  }, [setTasks]);
 
   const showModal = (record) => {
     setCurrentTask(record);
@@ -135,7 +147,7 @@ const TaskList = () => {
   const statusColors = {
     "To Do": "blue",
     "In Progress": "orange",
-    "Done": "green",
+    Done: "green",
   };
 
   const updateTask = (updatedTask) => {

@@ -1,6 +1,7 @@
 const Task = require('../models/Task');
 const User = require('../models/User');
-const io = require('../app');
+const { io } = require('../app');
+const { getIo } = require("../socket");
 
 
 exports.createTask = async (req, res) => {
@@ -16,7 +17,9 @@ exports.createTask = async (req, res) => {
       createdBy: req.user.id,
     });
     await task.save();
-    io.emit('taskCreated', task);
+    const io = getIo();
+    io.emit("taskCreated", task);
+    console.log("Task created event emitted!");
     res.status(201).json(task);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -57,7 +60,11 @@ exports.updateTask = async (req, res) => {
     if (assignedTo) task.assignedTo = assignedTo;
 
     await task.save();
-    io.emit('taskUpdated', task);
+
+    const io = getIo();
+    io.emit("TaskUpdated", task);
+    console.log("Task updated event emitted!");
+
     res.status(200).json(task);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -73,8 +80,12 @@ exports.deleteTask = async (req, res) => {
       return res.status(404).json({ message: 'Task not found' });
     }
     await task.deleteOne();
-    // Emit real-time update to all clients
-    io.emit('taskDeleted', id);
+
+    const io = getIo();
+    io.emit("taskDeleted", id);
+    console.log("taskDeleted!");
+
+
     res.status(200).json({ message: 'Task deleted successfully' });
   } catch (err) {
     res.status(400).json({ error: err.message });

@@ -15,13 +15,17 @@ import {
   Switch,
   Tooltip,
   message,
+  Menu
 } from "antd";
 import { IoMdLogOut } from "react-icons/io";
-
 import { NavLink, Link } from "react-router-dom";
 import styled from "styled-components";
 import avtar from "../../assets/images/team-2.jpg";
 import usePostApi from "../../hooks/usePostApi";
+import { io } from "socket.io-client";
+import { BellOutlined } from "@ant-design/icons";
+
+const socket = io("http://localhost:5000");
 
 const bell = [
   <svg
@@ -175,12 +179,53 @@ function Header({
   handleFixedNavbar,
 }) {
   const { Title, Text } = Typography;
-
+  const [notifications, setNotifications] = useState([]);
   const [visible, setVisible] = useState(false);
   const [sidenavType, setSidenavType] = useState("transparent");
   const { data, loading, error, postData } = usePostApi('auth/logout');
 
   useEffect(() => window.scrollTo(0, 0));
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Connected to Socket.IO server:", socket.id);
+    });
+
+    socket.on("taskCreated", (task) => {
+      console.log("New task created:", task);
+      setNotifications((prev) => [...prev, { type: "Task Created", title: task.title }]);
+    });
+
+    socket.on("TaskUpdated", (task) => {
+      console.log("Task updated:", task);
+      setNotifications((prev) => [...prev, { type: "Task Updated", title: task.title }]);
+    });
+
+    socket.on("taskDeleted", (taskId) => {
+      console.log("Task deleted:", taskId);
+      setNotifications((prev) => [...prev, { type: "Task Deleted", title: `Task ID: ${taskId}` }]);
+    });
+
+    return () => {
+      socket.off("taskCreated");
+      socket.off("TaskUpdated");
+      socket.off("taskDeleted");
+    };
+  }, []);
+
+  const menu = (
+    <Menu>
+      {notifications.length > 0 ? (
+        notifications.map((notification, index) => (
+          <Menu.Item key={index}>
+            <strong>{notification.type}:</strong> {notification.title}
+          </Menu.Item>
+        ))
+      ) : (
+        <Menu.Item disabled>No new notifications</Menu.Item>
+      )}
+    </Menu>
+  );
 
 
   const HandleLogOut = async () => {
@@ -191,7 +236,7 @@ function Header({
           type: 'success',
           content: 'LogOut Successfully',
         });
-        sessionStorage.clear(); // Corrected this line
+        sessionStorage.clear();
       }
     } catch (error) {
       message.open({
@@ -200,8 +245,8 @@ function Header({
       });
     }
   };
-  
-  
+
+
   const showDrawer = () => setVisible(true);
   const hideDrawer = () => setVisible(false);
 
@@ -233,8 +278,8 @@ function Header({
           <Tooltip title="Log out">
             <Link to="/sign-in"><Button
               type="link"
-            // className="sidebar-toggler" 
-            onClick={HandleLogOut}
+              // className="sidebar-toggler" 
+              onClick={HandleLogOut}
             >
               {/* {toggler} */}
               <IoMdLogOut />
@@ -251,14 +296,10 @@ function Header({
             <IoMdLogOut />
           </Button> */}
 
-          <Badge size="small" count={4}>
-            <Dropdown disabled overlay={menu} trigger={["click"]}>
-              <a
-                href="#pablo"
-                className="ant-dropdown-link"
-                onClick={(e) => e.preventDefault()}
-              >
-                {bell}
+          <Badge size="small" count={notifications.length}>
+            <Dropdown overlay={menu} trigger={["click"]}>
+              <a href="#pablo" onClick={(e) => e.preventDefault()}>
+                <BellOutlined style={{ fontSize: "24px" }} />
               </a>
             </Dropdown>
           </Badge>
